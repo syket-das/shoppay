@@ -5,9 +5,10 @@ import { BsSuitHeart } from 'react-icons/bs';
 import { RiAccountCircleLine, RiArrowDropDownFill } from 'react-icons/ri';
 import Link from 'next/link';
 import UserMenu from './UserMenu';
+import { useSession } from 'next-auth/react';
 
 const Top = ({ country }) => {
-  const [loggedIn, setLoggedIn] = useState(true);
+  const { data: session } = useSession();
   const [visible, setVisible] = useState(false);
 
   return (
@@ -18,7 +19,9 @@ const Top = ({ country }) => {
           <li className={styles.li}>
             {/* USA flag src link */}
             <img src={country?.flag} alt={country?.name} />
-            <span>{country?.name} - {country?.currency}</span>
+            <span>
+              {country?.name} - {country?.currency}
+            </span>
           </li>
           <li className={styles.li}>
             <MdSecurity />
@@ -42,14 +45,14 @@ const Top = ({ country }) => {
             onMouseOver={() => setVisible(true)}
             onMouseLeave={() => setVisible(false)}
           >
-            {loggedIn ? (
+            {session ? (
               <li className={styles.li}>
                 <div className={styles.flex}>
                   <img
-                    src="https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/1024px-Flag_of_the_United_States.svg.png"
-                    alt=""
+                    src={session.user.image}
+                    alt={session.user.name}
                   />
-                  <span>Syket</span>
+                  <span>{session.user.name.split(' ')[0]}</span>
                   <RiArrowDropDownFill />
                 </div>
               </li>
@@ -62,7 +65,7 @@ const Top = ({ country }) => {
                 </div>
               </li>
             )}
-            {visible && <UserMenu loggedIn={loggedIn} />}
+            {visible && <UserMenu session={session} />}
           </li>
         </ul>
       </div>
